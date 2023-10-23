@@ -2,18 +2,9 @@
 
 {% block content %}
     <div class="row text-center">
-        {% for object in object_list %}
-            <div class="col-3">
-                <div class="card mb-4 box-shadow">
-                    <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">{{ object.name }}</h4>
-                    </div>
-                    <div class="card-body">
-                        <img>
-                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Купить</button>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+        <img>
+        <h4>{{ object.description }}</h4>
+        <a class="p-2 btn btn-outline-primary" href="#">В корзину</a>
     </div>
+
 {% endblock %}
