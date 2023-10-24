@@ -23,8 +23,8 @@ def products(request, pk):
 def product(request, pk):
     product_item = Product.objects.get(pk=pk)
     context = {
-        'object': Product.objects.get(pk=pk)
-        'description': f'{product_item.description}',
+        'object': Product.objects.get(pk=pk),
+        'description': product_item.description,
         'title': f'{product_item.name}'
     }
     return render(request, 'catalog/product.html', context)
