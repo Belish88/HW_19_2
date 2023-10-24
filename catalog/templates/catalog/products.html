@@ -1,5 +1,5 @@
 {% extends 'catalog/base.html' %}
-{% load my_tags %}
+
 {% block content %}
     <div class="row text-center">
         {% for object in object_list %}
@@ -9,10 +9,7 @@
                         <h4 class="my-0 font-weight-normal">{{ object.name }}</h4>
                     </div>
                     <div class="card-body">
-                        <img src="{% mymedia_tag object.img %}" width="100">
-                        <div>
-                            <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:products' object.pk %}">К товарам</a>
-                        </div>
+                        <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:product' object.pk %}">Описание</a>
                     </div>
                 </div>
             </div>
