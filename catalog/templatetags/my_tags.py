@@ -7,14 +7,14 @@ register = template.Library()
 def mymedia_filter(val):
     if val:
 
-        return f'/media/catalog/{val}'
+        return f'/media/{val}'
     return '#'
 
 
 @register.simple_tag
 def mymedia_tag(val):
     if val:
-        return f'/media/catalog/{val}'
+        return f'/media/{val}'
     return '#'
 
 
