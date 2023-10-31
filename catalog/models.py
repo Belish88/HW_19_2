@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.utils.datetime_safe import date
 
@@ -18,7 +19,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Наименование')
+    name = models.CharField(max_length=100, verbose_name='Наименование', unique=True)
     description = models.TextField(**NULLABLE, verbose_name='Описание')
     img = models.ImageField(upload_to='product/', **NULLABLE, verbose_name='Изображение')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
@@ -34,18 +35,15 @@ class Product(models.Model):
         verbose_name_plural = 'продукты'
 
 
-class Blog(models.Model):
-    title = models.CharField(max_length=150, verbose_name='Заголовок')
-    slug = models.CharField(max_length=150, verbose_name='Slug')
-    text = models.TextField(verbose_name='Содержимое', **NULLABLE)
-    img = models.ImageField(upload_to='blog/', **NULLABLE, verbose_name='Изображение')
-    date_begin = models.DateField(default=date.today, verbose_name='Дата создания')
-    activate = models.BooleanField(default=True)
-    count_views = models.IntegerField(default=0, verbose_name='Количество просмотров')
+class Version(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    number = models.IntegerField(verbose_name='Номер')
+    name = models.CharField(max_length=100, verbose_name='Наименование', unique=True)
+    activate = models.BooleanField(default=False, verbose_name='Активировать')
 
     def __str__(self):
-        return f'{self.title}'
+        return f'{self.name} ({self.number})'
 
     class Meta:
-        verbose_name = 'блог'
-        verbose_name_plural = 'блоги'
+        verbose_name = 'версия'
+        verbose_name_plural = 'версии'
