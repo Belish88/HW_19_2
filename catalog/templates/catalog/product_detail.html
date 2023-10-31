@@ -14,6 +14,11 @@
                 <div class="card mb-4 box-shadow">
                     <h4>Оисание</h4>
                     {{ object.description|description_filter }}
+                    {% for version in object.version_set.all %}
+                        {% if version.activate %}
+                            <p>Активная версия:{{ version.name }}{{ version.number }}<p>
+                        {% endif %}
+                    {% endfor %}
                     <h4>Цена: {{ object.price }} руб. </h4>
                 </div>
             </div>

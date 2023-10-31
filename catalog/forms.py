@@ -1,6 +1,6 @@
 from django import forms
 
-from catalog.models import Product
+from catalog.models import Product, Version
 
 
 class ProductForm(forms.ModelForm):
@@ -8,6 +8,11 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ('name', 'description', 'img', 'category', 'price')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, fild in self.fields.items():
+            fild.widget.attrs['class'] = 'form-control'
 
     def clean_name(self):
         cleaned_data = self.cleaned_data.get('name')
@@ -27,3 +32,24 @@ class ProductForm(forms.ModelForm):
                 raise forms.ValidationError('Используются запретные слова')
         return cleaned_data
 
+
+class VersionForm(forms.ModelForm):
+
+    class Meta:
+        model = Version
+        exclude = ('activate',)
+        # fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, fild in self.fields.items():
+            fild.widget.attrs['class'] = 'form-control'
+
+    # def clean_activate(self):
+    #     cleaned_data = self.cleaned_data.get('activate')
+    #     count_activate_version = Version.objects.filter(activate=True)
+    #     if cleaned_data and len(count_activate_version) > 1:
+    #         print(cleaned_data)
+    #         print(len(count_activate_version))
+    #         raise forms.ValidationError('Может быть только одна актуальная версия')
+    #     return cleaned_data

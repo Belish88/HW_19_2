@@ -24,11 +24,3 @@ def description_filter(val):
 
         return f'{val}'[:500]
     return '#'
-
-
-@register.filter()
-def version_filter(val):
-    if val.activate:
-
-        return f'{val}'
-    return '#'
