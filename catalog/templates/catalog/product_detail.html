@@ -22,7 +22,11 @@
                     <h4>Цена: {{ object.price }} руб. </h4>
                 </div>
             </div>
-            <a class="p-2 btn btn-outline-primary" href="#">Купить</a>
+            <div class="col-12">
+                <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:update_product' object.pk %}">Редактировать</a>
+                <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:delete_product' object.pk %}">Удалить</a>
+                <a class="p-2 btn btn-outline-primary" href="#">Купить</a>
+            </div>
         </div>
     </div>
 
