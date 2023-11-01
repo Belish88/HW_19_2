@@ -37,19 +37,20 @@ class VersionForm(forms.ModelForm):
 
     class Meta:
         model = Version
-        exclude = ('activate',)
-        # fields = '__all__'
+        # exclude = ('activate',)
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, fild in self.fields.items():
-            fild.widget.attrs['class'] = 'form-control'
+            if field_name != 'activate':
+                fild.widget.attrs['class'] = 'form-control'
 
-    # def clean_activate(self):
-    #     cleaned_data = self.cleaned_data.get('activate')
-    #     count_activate_version = Version.objects.filter(activate=True)
-    #     if cleaned_data and len(count_activate_version) > 1:
-    #         print(cleaned_data)
-    #         print(len(count_activate_version))
-    #         raise forms.ValidationError('Может быть только одна актуальная версия')
-    #     return cleaned_data
+    def clean_activate(self, count_activate_version=0):
+        cleaned_data = self.cleaned_data.get('activate')
+        if cleaned_data:
+            count_activate_version += 1
+            print(count_activate_version)
+            if count_activate_version > 1:
+                raise forms.ValidationError('Может быть только одна актуальная версия')
+        return cleaned_data
