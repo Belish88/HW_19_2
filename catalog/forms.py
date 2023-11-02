@@ -46,11 +46,8 @@ class VersionForm(forms.ModelForm):
             if field_name != 'activate':
                 fild.widget.attrs['class'] = 'form-control'
 
-    def clean_activate(self, count_activate_version=0):
-        cleaned_data = self.cleaned_data.get('activate')
-        if cleaned_data:
-            count_activate_version += 1
-            print(count_activate_version)
-            if count_activate_version > 1:
-                raise forms.ValidationError('Может быть только одна актуальная версия')
-        return cleaned_data
+    # def clean_activate(self):
+    #     cleaned_data = self.cleaned_data.get('activate')
+    #     if not ProductUpdateView.form_valid(self):
+    #         raise forms.ValidationError('Может быть только одна актуальная версия')
+    #     return cleaned_data
