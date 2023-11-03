@@ -10,13 +10,17 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ('email', 'password1', 'password2')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, fild in self.fields.items():
+            fild.widget.attrs['class'] = 'form-control'
+
 
 class UserProfileForm(UserChangeForm):
 
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'phone', 'avatar', 'country')
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
