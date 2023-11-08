@@ -19,6 +19,16 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:category')
 
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        return context_data
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.author = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
 
 class ProductUpdateView(UpdateView):
     model = Product
@@ -93,5 +103,3 @@ def contacts(request):
         'title': 'Контакты '
     }
     return render(request, 'catalog/contacts.html', context)
-
-

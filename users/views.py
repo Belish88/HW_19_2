@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
+from django.views.generic import CreateView, UpdateView, TemplateView
 
+import users
 from users.forms import UserRegisterForm, UserProfileForm
 from users.models import User
 from users.utils import restore_password
@@ -33,18 +34,30 @@ def activate(request, token):
     return render(request, 'users/activate.html')
 
 
-def restore(request):
-    email = 'belish-88@yandex.ru'
-    user = User.objects.get(email=email)
-    new_pas = restore_password()
-    user.password = new_pas
-    send_mail(
-        subject='Восстановление пароля',
-        message=f'Ваш новый пароль {new_pas}',
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[email]
-    )
-    return render(request, 'users/restore.html')
+class RestoreView(TemplateView):
+    template_name = 'users/restore.html'
+
+    def post(self, request,  *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        email = self.request.POST.get('email')
+
+        try:
+            user = User.objects.get(email=email)
+        except users.models.User.DoesNotExist:
+            context['description'] = 'Неверный email. Попробуйте еще раз'
+        else:
+            new_pas = restore_password()
+            user.set_password(new_pas)
+            user.save()
+
+            send_mail(
+                    subject='Восстановление пароля',
+                    message=f'Ваш новый пароль {new_pas}',
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[email]
+                )
+            return redirect(reverse('users:login'))
+        return self.render_to_response(context)
 
 
 class ProfileView(UpdateView):
@@ -54,4 +67,3 @@ class ProfileView(UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
-
