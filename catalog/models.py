@@ -19,6 +19,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    author = models.ForeignKey('users.User', **NULLABLE, on_delete=models.SET_NULL, verbose_name='автор')
     name = models.CharField(max_length=100, verbose_name='Наименование', unique=True)
     description = models.TextField(**NULLABLE, verbose_name='Описание')
     img = models.ImageField(upload_to='product/', **NULLABLE, verbose_name='Изображение')
