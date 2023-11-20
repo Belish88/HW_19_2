@@ -27,6 +27,7 @@ class Product(models.Model):
     price = models.IntegerField(verbose_name='Цена')
     date_begin = models.DateField(default=date.today, verbose_name='Дата создания')
     date_chang = models.DateField(default=date.today, verbose_name='Дата последнего изменения')
+    publication = models.BooleanField(default=False, verbose_name='публикация')
 
     def __str__(self):
         return f'{self.name} ({self.category})'
@@ -34,6 +35,9 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'продукт'
         verbose_name_plural = 'продукты'
+        permissions = [
+            ('set_publication', 'Can publication'),
+        ]
 
 
 class Version(models.Model):

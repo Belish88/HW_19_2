@@ -1,5 +1,7 @@
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import inlineformset_factory
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
@@ -7,14 +9,23 @@ from catalog.forms import ProductForm, VersionForm
 from catalog.models import Category, Product, Version
 
 
-class CategoryListView(ListView):
+class UserHasPermissionMixin:
+    def has_permission(self):
+        # Проверяем, является ли пользователь владельцем объекта, если да, то разрешаем операцию
+        if self.model.objects.get(pk=self.kwargs.get('pk')).author == self.request.user:
+            return True
+        # если не является, то следуем ограничениям прав permission_required
+        return super().has_permission()
+
+
+class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     extra_context = {
         'title': 'Категории товаров',
     }
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:category')
@@ -30,9 +41,10 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UserHasPermissionMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
+    permission_required = 'catalog.change_product'
 
     def get_success_url(self):
         return reverse('catalog:product', args=[self.kwargs.get('pk')])
@@ -57,12 +69,13 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, UserHasPermissionMixin, PermissionRequiredMixin, DeleteView):
     model = Product
+    permission_required = 'catalog.delete_product'
     success_url = reverse_lazy('catalog:category')
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
 
     def get_queryset(self):
@@ -80,7 +93,7 @@ class ProductListView(ListView):
         return context_data
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
 
     def get_queryset(self):
@@ -98,6 +111,20 @@ class ProductDetailView(DetailView):
         return context_data
 
 
+@login_required
+@permission_required('catalog.set_publication')
+def publication(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    cat_pk = product.category.pk
+    if product.publication:
+        product.publication = False
+    else:
+        product.publication = True
+    product.save()
+    return redirect(reverse('catalog:product_list', kwargs={'pk': cat_pk}))
+
+
+@login_required
 def contacts(request):
     context = {
         'title': 'Контакты '
