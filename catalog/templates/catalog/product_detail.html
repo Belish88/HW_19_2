@@ -23,8 +23,10 @@
                 </div>
             </div>
             <div class="col-12">
-                {% if user.is_authenticated and product.author|stringformat:"s" == user.email|stringformat:"s" %}
+                {% if object.author == user or perms.catalog.change_product %}
                     <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:update_product' object.pk %}">Редактировать</a>
+                {% endif %}
+                {% if object.author == user or perms.catalog.delete_product %}
                     <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:delete_product' object.pk %}">Удалить</a>
                 {% endif %}
                 <a class="p-2 btn btn-outline-primary" href="#">Купить</a>

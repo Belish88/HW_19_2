@@ -2,9 +2,9 @@
 {% load my_tags %}
 {% block content %}
     <div class="col-12 mb-5">
-        {% if user.is_authenticated %}
+<!--        {% if user.is_authenticated %}-->
             <a class="btn btn-primary" href="{% url 'catalog:create_product' %}">Добавить товар</a>
-        {% endif %}
+<!--        {% endif %}-->
     </div>
     <div class="row text-center">
         {% for object in object_list %}
