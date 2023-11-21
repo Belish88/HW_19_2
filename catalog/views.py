@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, ModeratorProductForm
 from catalog.models import Category, Product, Version
 
 
@@ -49,13 +49,22 @@ class ProductUpdateView(LoginRequiredMixin, UserHasPermissionMixin, PermissionRe
     def get_success_url(self):
         return reverse('catalog:product', args=[self.kwargs.get('pk')])
 
+    def get_form_class(self):
+        print(self.object.author)
+        print(self.request.user)
+        print(self.object.author != self.request.user)
+        if self.object.author != self.request.user:
+            self.form_class = ModeratorProductForm
+        return self.form_class
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        VersionFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
-        if self.request.method == 'POST':
-            context_data['formset'] = VersionFormset(self.request.POST, instance=self.object)
-        else:
-            context_data['formset'] = VersionFormset(instance=self.object)
+        if self.model.author == self.request.user:
+            VersionFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
+            if self.request.method == 'POST':
+                context_data['formset'] = VersionFormset(self.request.POST, instance=self.object)
+            else:
+                context_data['formset'] = VersionFormset(instance=self.object)
         return context_data
 
     def form_valid(self, form):
