@@ -33,6 +33,18 @@ class ProductForm(forms.ModelForm):
         return cleaned_data
 
 
+class ModeratorProductForm(forms.ModelForm):
+
+    class Meta:
+        model = Product
+        fields = ('name', 'description', 'category')
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            for field_name, fild in self.fields.items():
+                fild.widget.attrs['class'] = 'form-control'
+
+
 class VersionForm(forms.ModelForm):
 
     class Meta:
