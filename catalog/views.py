@@ -7,6 +7,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 from catalog.forms import ProductForm, VersionForm, ModeratorProductForm
 from catalog.models import Category, Product, Version
+from catalog.services import get_object_list
 
 
 class UserHasPermissionMixin:
@@ -23,6 +24,10 @@ class CategoryListView(LoginRequiredMixin, ListView):
     extra_context = {
         'title': 'Категории товаров',
     }
+
+    def get_queryset(self):
+        # возвращаем кэшированный queryset, который присвоится к object_list
+        return get_object_list(self.model)
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
